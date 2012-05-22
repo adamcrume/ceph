@@ -37,7 +37,6 @@ using namespace std;
 int KeyRing::from_ceph_context(CephContext *cct, KeyRing *keyring)
 {
   const md_config_t *conf = cct->_conf;
-  bool found_key = false;
 
   AuthMethodList supported(cct,
 			   cct->_conf->auth_client_required.length() ?
@@ -52,12 +51,11 @@ int KeyRing::from_ceph_context(CephContext *cct, KeyRing *keyring)
   string filename;
   if (ceph_resolve_file_search(conf->keyring, filename)) {
     ret = keyring->load(cct, filename);
-    if (ret) {
-      lderr(cct) << "failed to load " << filename
-		 << ": " << cpp_strerror(ret) << dendl;
-    } else {
-      found_key = true;
-    }
+    if (ret == 0)
+      return 0;
+
+    lderr(cct) << "failed to load " << filename
+	       << ": " << cpp_strerror(ret) << dendl;
   }
 
   if (!conf->key.empty()) {
@@ -65,7 +63,7 @@ int KeyRing::from_ceph_context(CephContext *cct, KeyRing *keyring)
     try {
       ea.key.decode_base64(conf->key);
       keyring->add(conf->name, ea);
-      found_key = true;
+      return 0;
     }
     catch (buffer::error& e) {
       lderr(cct) << "failed to decode key '" << conf->key << "'" << dendl;
@@ -88,7 +86,7 @@ int KeyRing::from_ceph_context(CephContext *cct, KeyRing *keyring)
 	try {
 	  ea.key.decode_base64(k);
 	  keyring->add(conf->name, ea);
-	  found_key = true;
+	  return 0;
 	}
 	catch (buffer::error& e) {
 	  lderr(cct) << "failed to decode key '" << k << "'" << dendl;
@@ -97,19 +95,14 @@ int KeyRing::from_ceph_context(CephContext *cct, KeyRing *keyring)
       }
       fclose(fp);
     } else {
-      ret = errno;
+      ret = -errno;
       lderr(cct) << "failed to open " << conf->keyfile
 		 << ": " << cpp_strerror(ret) << dendl;
+      return ret;
     }
   }
 
-  if (!found_key) {
-    if (conf->keyring.length())
-      lderr(cct) << "failed to open keyring from " << conf->keyring << dendl;
-    return -ENOENT;
-  }
-
-  return 0;
+  return -ENOENT;
 }
 
 KeyRing *KeyRing::create_empty()
