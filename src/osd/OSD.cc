@@ -561,7 +561,10 @@ OSD::OSD(int id, Messenger *internal_messenger, Messenger *external_messenger,
   Dispatcher(external_messenger->cct),
   osd_lock("OSD::osd_lock"),
   timer(external_messenger->cct, osd_lock),
-  authorize_handler_registry(new AuthAuthorizeHandlerRegistry(external_messenger->cct)),
+  authorize_handler_registry(new AuthAuthorizeHandlerRegistry(external_messenger->cct,
+							      cct->_conf->auth_service_required.length() ?
+							      cct->_conf->auth_service_required :
+							      cct->_conf->auth_supported)),
   cluster_messenger(internal_messenger),
   client_messenger(external_messenger),
   monc(mc),

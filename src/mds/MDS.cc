@@ -87,7 +87,10 @@ MDS::MDS(const std::string &n, Messenger *m, MonClient *mc) :
   Dispatcher(m->cct),
   mds_lock("MDS::mds_lock"),
   timer(m->cct, mds_lock),
-  authorize_handler_registry(new AuthAuthorizeHandlerRegistry(m->cct)),
+  authorize_handler_registry(new AuthAuthorizeHandlerRegistry(m->cct,
+							      m->cct->_conf->auth_service_required.length() ?
+							      m->cct->_conf->auth_service_required :
+							      m->cct->_conf->auth_supported)),
   name(n),
   whoami(-1), incarnation(0),
   standby_for_rank(MDSMap::MDS_NO_STANDBY_PREF),
