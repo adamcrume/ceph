@@ -38,7 +38,7 @@ class MMonSubscribeAck;
 class MAuthReply;
 class MAuthRotating;
 class LogClient;
-class AuthSupported;
+class AuthMethodList;
 
 enum MonClientState {
   MC_STATE_NONE,
@@ -69,7 +69,7 @@ private:
 
   LogClient *log_client;
 
-  AuthSupported *auth_supported;
+  AuthMethodList *auth_supported;
 
   bool ms_dispatch(Message *m);
   bool ms_handle_reset(Connection *con);

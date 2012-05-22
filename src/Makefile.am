@@ -979,7 +979,7 @@ libcommon_files = \
 	./ceph_ver.c \
 	auth/AuthAuthorizeHandler.cc \
 	auth/AuthClientHandler.cc \
-	auth/AuthSupported.cc \
+	auth/AuthMethodList.cc \
 	auth/cephx/CephxAuthorizeHandler.cc \
 	auth/cephx/CephxClientHandler.cc \
 	auth/cephx/CephxProtocol.cc \
@@ -1180,7 +1180,7 @@ noinst_HEADERS = \
 	auth/none/AuthNoneServiceHandler.h\
 	auth/none/AuthNoneProtocol.h\
 	auth/Auth.h\
-	auth/AuthSupported.h\
+	auth/AuthMethodList.h\
 	auth/AuthClientHandler.h\
 	auth/AuthServiceHandler.h\
 	auth/AuthAuthorizeHandler.h\
