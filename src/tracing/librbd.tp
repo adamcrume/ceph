@@ -1,0 +1,18 @@
+#include "tracing/tracing-common.h"
+#include "include/rbd/librbd.h"
+
+TRACEPOINT_EVENT(librbd, read_enter,
+    TP_ARGS(
+        const char*, name),
+    TP_FIELDS(
+        ctf_string(name, name)
+    )
+)
+
+TRACEPOINT_EVENT(librbd, read_exit,
+    TP_ARGS(
+        ssize_t, retval),
+    TP_FIELDS(
+        ctf_integer(ssize_t, retval, retval)
+    )
+)

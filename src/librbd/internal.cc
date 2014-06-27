@@ -23,6 +23,7 @@
 #include "include/util.h"
 
 #include "librados/snap_set_diff.h"
+#include "tracing/librbd.h"
 
 #define dout_subsys ceph_subsys_rbd
 #undef dout_prefix
@@ -2624,6 +2625,7 @@ reprotect_and_return_err:
 
   ssize_t read(ImageCtx *ictx, const vector<pair<uint64_t,uint64_t> >& image_extents, char *buf, bufferlist *pbl)
   {
+    tracepoint(librbd, read_enter, ictx->name.c_str());
     Mutex mylock("IoCtxImpl::write::mylock");
     Cond cond;
     bool done;
@@ -2635,6 +2637,7 @@ reprotect_and_return_err:
     if (r < 0) {
       c->release();
       delete ctx;
+      tracepoint(librbd, read_exit, r);
       return r;
     }
 
@@ -2643,6 +2646,7 @@ reprotect_and_return_err:
       cond.Wait(mylock);
     mylock.Unlock();
 
+    tracepoint(librbd, read_exit, ret);
     return ret;
   }
 
